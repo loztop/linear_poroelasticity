@@ -1,0 +1,127 @@
+   
+
+
+ for (unsigned int s=0; s<elem->n_sides(); s++)
+    {
+      if (elem->neighbor(s) == NULL)
+      {   
+        AutoPtr<Elem> side (elem->build_side(s));
+
+
+		Real hmax=(*elem).hmax();
+		Real darcy_fac=1000*(1.0/(hmax*hmax));
+
+
+
+        //fluid face 
+  			const std::vector<std::vector<Real> >&  phi_face_f =  fe_face_f->get_phi();
+  			const std::vector<std::vector<RealGradient> >& dphi_face_f = fe_face_f->get_dphi();
+  			const std::vector<Real>& JxW_face_f = fe_face_f->get_JxW();
+  			const std::vector<Point>& qface_point_f = fe_face_f->get_xyz();
+  			const std::vector<Point>& face_normals_f = fe_face_f->get_normals();
+  			fe_face_f->reinit(elem,s);  
+
+				 //pressure face 
+				const std::vector<std::vector<Real> >&  phi_face_p =  fe_face_p->get_phi();
+  			const std::vector<std::vector<RealGradient> >& dphi_face_p = fe_face_p->get_dphi();
+  			const std::vector<Real>& JxW_face_p = fe_face_p->get_JxW();
+  			const std::vector<Point>& qface_point_p = fe_face_p->get_xyz();
+  			const std::vector<Point>& face_normals_p = fe_face_p->get_normals();
+  			fe_face_p->reinit(elem,s); 
+
+						
+        	for (unsigned int qp=0; qp<qface_f->n_points(); qp++)
+					{
+
+						Real xf =	qface_point_f[qp](0);
+            Real yf = qface_point_f[qp](1);
+            #if THREED
+            Real zf = qface_point_f(2);
+            #endif
+
+
+	if( (xf<0.01) ){
+
+// LHS terms
+
+
+/*
+// (p,v.n)_{Gamma} term  //This might be for stokes only
+
+			for (unsigned int i=0; i<phi_face_p.size(); i++){
+              for (unsigned int j=0; j<phi_face_f.size(); j++){
+								Kpx(i,j) += JxW_face_f[qp]*phi_face_p[i][qp]*face_normals_f[qp](0)*phi_face_f[j][qp];
+								Kpy(i,j) += JxW_face_f[qp]*phi_face_p[i][qp]*face_normals_f[qp](1)*phi_face_f[j][qp];
+								#if THREED
+								Kpz(i,j) += JxW_face_f[qp]*phi_face_p[i][qp]*face_normals_f[qp](2)*phi_face_f[j][qp];
+								#endif
+		      		}
+		    		} 
+*/
+
+/*
+					// (u.n,q)_{Gamma} term  //This might be for stokes only
+				for (unsigned int i=0; i<phi_face_f.size(); i++){
+              for (unsigned int j=0; j<phi_face_p.size(); j++){
+								Kxp(i,j) += JxW_face_f[qp]*face_normals_f[qp](0)*phi_face_f[i][qp]*phi_face_p[j][qp];
+								Kyp(i,j) += JxW_face_f[qp]*face_normals_f[qp](1)*phi_face_f[i][qp]*phi_face_p[j][qp];
+								#if THREED
+								Kzp(i,j) += JxW_face_f[qp]*face_normals_f[qp](2)*phi_face_f[i][qp]*phi_face_p[j][qp];
+								#endif
+		      		}
+		    		}  
+
+*/
+
+// (alpha h^{-1},v.n)_{Gamma} term 
+						for (unsigned int i=0; i<phi_face_f.size(); i++)		{
+              for (unsigned int j=0; j<phi_face_f.size(); j++)			{
+								Kxx(i,j) += darcy_fac*JxW_face_f[qp]*face_normals_f[qp](0)*phi_face_f[i][qp]*face_normals_f[qp](0)*phi_face_f[j][qp];
+								Kyy(i,j) += darcy_fac*JxW_face_f[qp]*face_normals_f[qp](1)*phi_face_f[i][qp]*face_normals_f[qp](1)*phi_face_f[j][qp];
+								#if THREED
+								Kzz(i,j) += darcy_fac*JxW_face_f[qp]*face_normals_f[qp](2)*phi_face_f[i][qp]*face_normals_f[qp](2)*phi_face_f[j][qp];
+								#endif
+		      		}
+		    		}
+
+
+//RHS terms
+
+Real value =3;
+//value should be a vector							
+
+
+
+/*
+//(u0.n,q)_Gamma    //This might be for stokes only
+for (unsigned int i=0; i<phi_face_p.size(); i++){
+							Fp(i) += value*JxW_face_f[qp]*face_normals_f[qp](0)*phi_face_p[i][qp];
+            //  Fp(i) +=  0*JxW_face_f[qp]*face_normals_d[qp](1)*phi_face_p[i][qp];
+							#if THREED
+            //  Fp(i) +=  0*JxW_face_f[qp]*face_normals_f[qp](2)*phi_face_p[i][qp];
+							#endif
+
+}
+*/
+
+
+
+//(u0.n,alpha h^{-1} v.n)_Gamma    
+for (unsigned int i=0; i<phi_face_f.size(); i++){				
+					Fx(i) +=  value*darcy_fac*JxW_face_f[qp]*face_normals_f[qp](0)*phi_face_f[i][qp]*face_normals_f[qp](0);
+
+          //  Fy(i) +=  value*darcy_fac*JxW_face_f[qp]*face_normals_d[qp](1)*phi_face_f[i][qp]*face_normals_f[qp](0);
+				  #if THREED
+          //  Fz(i) += value*darcy_fac*JxW_face_f[qp]*face_normals_f[qp](2)*phi_face_f[i][qp]*face_normals_f[qp](0);
+					#endif
+}
+
+				}//endif
+
+
+
+				} //end qp
+      } //if (elem->neighbor(s) == NULL)
+ }// end boundary condition section  
+
+

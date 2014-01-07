@@ -1,0 +1,105 @@
+    for (unsigned int s=0; s<elem->n_sides(); s++)
+    {
+      if (elem->neighbor(s) == NULL)
+      {   
+        AutoPtr<Elem> side (elem->build_side(s));
+
+				Real hmax=(*elem).hmax();
+				Real disp_fac=1*(1.0/hmax);
+
+        //fluid face 
+  			const std::vector<std::vector<Real> >&  phi_face_d =  fe_face_d->get_phi();
+  			const std::vector<std::vector<RealGradient> >& dphi_face_d = fe_face_d->get_dphi();
+  			const std::vector<Real>& JxW_face_d = fe_face_d->get_JxW();
+  			const std::vector<Point>& qface_point_d = fe_face_d->get_xyz();
+  			const std::vector<Point>& face_normals_d = fe_face_d->get_normals();
+  			fe_face_d->reinit(elem,s);  
+
+				 //pressure face 
+				const std::vector<std::vector<Real> >&  phi_face_p =  fe_face_p->get_phi();
+  			const std::vector<std::vector<RealGradient> >& dphi_face_p = fe_face_p->get_dphi();
+  			const std::vector<Real>& JxW_face_p = fe_face_p->get_JxW();
+  			const std::vector<Point>& qface_point_p = fe_face_p->get_xyz();
+  			const std::vector<Point>& face_normals_p = fe_face_p->get_normals();
+  			fe_face_p->reinit(elem,s); 
+  						
+
+
+			
+        	for (unsigned int qp=0; qp<qface_f->n_points(); qp++)
+					{
+
+						Real xf =	qface_point_d[qp](0);
+            Real yf = qface_point_d[qp](1);
+            #if THREED
+            Real zf = qface_point_d(2);
+            #endif
+
+
+				//For y==0.y==1, nothing
+				if( (xf>0.99) || (xf<0.01) )
+				{
+						Real value = 0;
+			                 
+
+						for (unsigned int i=0; i<phi_face_d.size(); i++){
+              for (unsigned int j=0; j<phi_face_p.size(); j++){
+								Kup(i,j) += JxW_face_d[qp]*face_normals_d[qp](0)*phi_face_d[i][qp]*phi_face_p[j][qp];
+								Kvp(i,j) += JxW_face_d[qp]*face_normals_d[qp](1)*phi_face_d[i][qp]*phi_face_p[j][qp];
+								#if THREED
+								Kwp(i,j) += JxW_face_d[qp]*face_normals_d[qp](2)*phi_face_d[i][qp]*phi_face_p[j][qp];
+								#endif
+		      		}
+		    		}  
+
+						
+
+						for (unsigned int i=0; i<phi_face_d.size(); i++)		{
+              for (unsigned int j=0; j<phi_face_d.size(); j++)			{
+								Kuu(i,j) += disp_fac*JxW_face_d[qp]*face_normals_d[qp](0)*phi_face_d[i][qp]*face_normals_d[qp](0)*phi_face_d[j][qp];
+								Kvv(i,j) += disp_fac*JxW_face_d[qp]*face_normals_d[qp](1)*phi_face_d[i][qp]*face_normals_d[qp](1)*phi_face_d[j][qp];
+								#if THREED
+								Kww(i,j) += disp_fac*JxW_face_d[qp]*face_normals_d[qp](2)*phi_face_d[i][qp]*face_normals_d[qp](2)*phi_face_d[j][qp];
+								#endif
+		      		}
+		    		}    
+
+				} //end if
+
+
+			//For prescribe disp
+				if( (xf>0.99) || (xf<0.01) )
+				{                
+
+					Real value=-0.4*progress;
+	                     
+					//Apply know BCS (to rhs)                  
+						for (unsigned int i=0; i<phi_face_d.size(); i++){
+							
+
+
+							Fu(i) += - value*JxW_face_d[qp]*face_normals_d[qp](0)*dphi_face_d[i][qp](0);
+              Fv(i) += - value*JxW_face_d[qp]*face_normals_d[qp](1)*dphi_face_d[i][qp](1);
+							#if THREED
+              Fw(i) += - value*JxW_face_d[qp]*face_normals_d[qp](2)*dphi_face_d[i][qp](2);
+							#endif
+
+
+
+							Fu(i) +=  value*JxW_face_d[qp]*phi_face_d[i][qp];
+              Fv(i) +=  value*JxW_face_d[qp]*phi_face_d[i][qp];
+							#if THREED
+              Fw(i) +=  value*JxW_face_d[qp]*phi_face_d[i][qp];
+							#endif
+
+		    		}
+            
+   
+					} //end if
+
+
+				} //end qp
+      } //if (elem->neighbor(s) == NULL)
+    } // end boundary condition section  
+
+
