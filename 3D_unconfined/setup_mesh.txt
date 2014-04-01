@@ -1,0 +1,49 @@
+//setup mesh
+#if CUSTOM_MESH
+//  std::string mesh_file_name ("/ecslab/lorenzb/gmsh-2.5.0-Linux/lozo_annulus_coarse.msh");
+//    std::string mesh_file_name ("pipethick.msh");
+
+    std::string mesh_file_name ("cylinder.msh");
+
+#endif
+
+#if WRITE_MESH
+std::string mesh_out_file_name ("parallel.msh");
+#endif
+
+Mesh mesh(3);
+MeshData mesh_data(mesh);
+
+// GmshIO(mesh).read(mesh_file_name);
+
+
+
+
+/* //Squash_cuboid_mesh
+ MeshTools::Generation::build_cube (mesh,
+                                       11, 4,4,
+                                       0.0, 4,  
+                                       0.0, 1.5,
+                                       0.0, 1.5,
+                                       HEX27);
+*/
+
+
+//Confined & UNCONFINED Compression 
+ MeshTools::Generation::build_cube (mesh,
+                                       N_eles , N_eles, N_eles,
+                                       0.0, 1,  
+                                       0.0, 1,
+                                       0.0, 1,
+                                      // TET10);
+				       HEX27);
+
+
+
+mesh.all_second_order();
+mesh.prepare_for_use();
+mesh.print_info();
+
+
+
+
