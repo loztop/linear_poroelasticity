@@ -3,14 +3,14 @@ clear all;
 
 tec='.tec';
 
-%P2P2P1 solution
-base='/home/loztop/Dropbox/Dphil/libmesh_projetcs/linear_poro_unconfined/data/cylinder_5567sym_100NT_10T_1_STAB_';
+%numerical solution
+base='/home/scratch/Dropbox/Dphil/libmesh_git/linear_poro_paper/3D_unconfined/data/cylinder_728sym_20NT_10T_1_STAB_';
 
 
 
 %Parameters for simulation (analytical solution)
 params.T=10; %End Time
-params.Nt=100;  %Number of time steps
+params.Nt=20;  %Number of time steps
 params.dt=params.T/params.Nt;    %Size of time step
 
 params.a=1;    %Radius of cylinder

@@ -9,15 +9,6 @@ set([gca]             , ...
 
 
 
-%plot analytical solution
-%plot(b_x,b_y,'k','LineWidth',3);
-%hold all
-
-%plot(num_x,num_y,'rx','MarkerSize',14,'LineWidth',2);
-%hold all
-
-
-
 num_hand=plot(num_x,num_y,'ko','LineWidth',2,'MarkerSize',7)
 hold on;
 an_hand=plot(b_x,b_y,'-k','LineWidth',2,'MarkerSize',8)

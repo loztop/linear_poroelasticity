@@ -28,10 +28,10 @@ if (argc >2){
 
 }else{
 
-	es.parameters.set<Real> ("n_timesteps") = 10;
-	es.parameters.set<Real> ("N_eles") = 16;
+	es.parameters.set<Real> ("n_timesteps") = 2;
+	es.parameters.set<Real> ("N_eles") = 32;
 	es.parameters.set<std::string> ("output_file_name") = "data/test_2D.mat";
-	es.parameters.set<std::string> ("result_file_name") = "data/cant_nopin_10T";
+	es.parameters.set<std::string> ("result_file_name") = "data/cant_nopin_disc_96";
 	es.parameters.set<Real> ("beta") = 0;
 
 }

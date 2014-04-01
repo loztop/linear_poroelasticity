@@ -42,7 +42,7 @@
 #define PC_TYPE PCLU
 #define PETSC_MUMPS 1
 
-#define WRITE_TEC 0
+#define WRITE_TEC 1
 #define EXODUS 1
 
 

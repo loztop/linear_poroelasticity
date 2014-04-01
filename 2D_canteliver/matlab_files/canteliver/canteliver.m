@@ -1,8 +1,12 @@
 clear all;
 
 tec='.tec';
-base='/auto/users/lorenzb/Dphil/libmesh_projetcs/linear_poro_canteliver/data/cant_nopin_disc_96_';
-%base='/auto/users/lorenzb/Dphil/libmesh_projetcs/linear_poro_canteliver/data/cant_nopin_disc_unstable_';
+
+%data from paper
+base='/auto/users/lorenzb/Dphil/libmesh_git/linear_poro_paper/2D_canteliver/data/paper_figure/cant_nopin_disc_96_';
+
+%quick example
+%base='/auto/users/lorenzb/Dphil/libmesh_git/linear_poro_paper/2D_canteliver/data/cant_nopin_disc_32_';
 
 fname=strcat(base,num2str(5),tec);
 

@@ -56,9 +56,13 @@ int main (int argc, char** argv)
   // Initialize libMesh.
   LibMeshInit init (argc, argv);
    
-  std::string result_file_name ("data/cylinder_5567sym_100NT_10T_1_STAB");
+	//This gives a fine solution
+ // std::string result_file_name ("data/cylinder_5567sym_100NT_10T_1_STAB");
+	
+	//Quick solution for testing
+  std::string result_file_name ("data/cylinder_728sym_20NT_10T_1_STAB");
 
-  unsigned int n_timesteps = 100;
+  unsigned int n_timesteps = 20;
   Real time     = 0;
   Real end_time     = 10;
 
@@ -100,8 +104,8 @@ Real dt = end_time/n_timesteps;
 */
 
 
- // std::string mesh_file_name ("cylinder_sym728.msh");
-  std::string mesh_file_name ("cylinder_5567sym.msh");
+  std::string mesh_file_name ("cylinder_sym728.msh");
+ // std::string mesh_file_name ("cylinder_5567sym.msh");
 //   std::string mesh_file_name ("cylinder_sym737.msh");
 
   std::cout << mesh_file_name << std::endl;

@@ -15,7 +15,7 @@ int main (int argc, char** argv)
   unsigned int N_eles=equation_systems.parameters.get<Real>("N_eles");
 
   Real time     = 0;
-  Real end_time     = 10.0;
+  Real end_time     = 0.1;
 	Real dt = end_time/n_timesteps;
   equation_systems.parameters.set<Real> ("dt")   = dt;
 
